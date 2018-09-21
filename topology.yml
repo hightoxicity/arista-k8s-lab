@@ -58,7 +58,7 @@
 - name: k8s-worker-001
   ram: 2048
   box:
-    vbox: ./machines/vbox-empty.vbox
+    vbox: ./machines/vbox-empty.box
     libvirtbox: libvirt-k8snode
   links:
     - name: mgmt
@@ -69,7 +69,7 @@
 - name: k8s-worker-002
   ram: 2048
   box:
-    vbox: ./machines/vbox-empty.vbox
+    vbox: ./machines/vbox-empty.box
     libvirtbox: libvirt-k8snode
   links:
     - name: mgmt
