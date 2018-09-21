@@ -4,15 +4,16 @@ ubuntu_version="`lsb_release -r | awk '{print $2}'`";
 major_version="`echo $ubuntu_version | awk -F. '{print $1}'`";
 
 if [ "$ubuntu_version" = '17.10' ] || [ "$major_version" -ge "18" ]; then
-  echo "Network config will be defined at run"
-#echo "Create netplan config for eth0"
-#cat <<EOF >/etc/netplan/01-netcfg.yaml;
-#network:
-#  version: 2
-#  ethernets:
-#    eth0:
-#      dhcp4: true
-#EOF
+
+  echo "Create netplan config for eth0"
+  cat <<EOF >/etc/netplan/01-netcfg.yaml;
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true
+EOF
+  echo "Netplan config not applied, it will be effective with images inherited from this one"
 else
   # Adding a 2 sec delay to the interface up, to make the dhclient happy
   echo "pre-up sleep 2" >> /etc/network/interfaces;

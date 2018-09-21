@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
       override.vm.network "private_network",
         virtualbox__intnet: "mgmt",
         ip: "10.0.5.254",
-        auto_config: true,
+        auto_config: false,
         type: "static",
         mac: "16189C18A68C"
     end
@@ -46,7 +46,7 @@ Vagrant.configure("2") do |config|
         libvirt__network_address: "10.0.5.0",
         type: "static",
         libvirt__forward_mode: "veryisolated",
-        auto_config: true,
+        auto_config: false,
         libvirt__dhcp_enabled: false,
         libvirt__mtu: 1500,
         model_type: "e1000",
