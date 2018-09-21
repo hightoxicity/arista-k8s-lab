@@ -1,0 +1,103 @@
+{
+  "provisioners": [
+    {
+      "environment_vars": [
+        "HOME_DIR=/home/vagrant"
+      ],
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E sh -eux '{{.Path}}'",
+      "expect_disconnect": true,
+      "scripts": [
+        "scripts/pre-provision/createdirs.sh"
+      ],
+      "type": "shell"
+    },
+    {
+      "environment_vars": [
+        "HOME_DIR=/home/vagrant"
+      ],
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E sh -eux '{{.Path}}'",
+      "expect_disconnect": true,
+      "scripts": [
+        "../packer-common/scripts/pre-provision/vagrant.sh",
+        "../packer-common/scripts/update.sh",
+        "../packer-common/scripts/sshd.sh",
+        "../packer-common/scripts/networking.sh",
+        "../packer-common/scripts/vmware.sh",
+        "../packer-common/scripts/parallels.sh",
+        "../packer-common/scripts/kbrd.sh",
+        "../packer-common/scripts/utctimezone.sh",
+        "../packer-common/scripts/cleanup.sh",
+        "../packer-common/scripts/minimize.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "builders": [
+    {
+      "name": "trunk-qemu-qcow2",
+      "type": "qemu",
+      "output_directory": "output-qemu-qcow2",
+      "boot_command": [
+        "<esc><wait>",
+        "<esc><wait>",
+        "<enter><wait>",
+        "/install/vmlinuz<wait>",
+        " auto<wait>",
+        " console-setup/ask_detect=false<wait>",
+        " console-setup/layoutcode=fr<wait>",
+        " console-setup/modelcode=pc105<wait>",
+        " debconf/frontend=noninteractive<wait>",
+        " debian-installer=fr_FR.UTF-8<wait>",
+        " fb=false<wait>",
+        " initrd=/install/initrd.gz<wait>",
+        " kbd-chooser/method=fr<wait>",
+        " keyboard-configuration/layout=fr<wait>",
+        " keyboard-configuration/variant=latin9<wait>",
+        " locale=fr_FR.UTF-8<wait>",
+        " netcfg/get_domain=local<wait>",
+        " netcfg/get_hostname=trunk<wait>",
+        " netcfg/choose_interface=auto<wait>",
+        " grub-installer/bootdev=/dev/vda<wait>",
+        " noapic<wait>",
+        " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg",
+        " -- <wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_compression": true,
+      "disk_size": 4096,
+      "format": "qcow2",
+      "headless": true,
+      "accelerator": "kvm",
+      "http_directory": "http",
+      "http_port_min": 10082,
+      "http_port_max": 10089,
+      "iso_urls": [
+        "iso/ubuntu-18.04.1-server-amd64.iso",
+        "http://cdimage.ubuntu.com/ubuntu/releases/18.04.1/release/ubuntu-18.04.1-server-amd64.iso"
+      ],
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "a5b0ea5918f850124f3d72ef4b85bda82f0fcd02ec721be19c1a6952791c8ee8",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo 'vagrant'|sudo -S shutdown -P now",
+      "vm_name": "trunk-qcow2",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "ssh_host_port_min": 3213,
+      "ssh_host_port_max": 3214,
+      "qemuargs": [
+        ["-m", "1024"],
+        ["-smp", "1"],
+        ["-netdev", "user,id=user.0,hostfwd=tcp::3213-:22,hostfwd=tcp::3214-:22,net=10.0.2.0/24"],
+        ["-device", "virtio-net,netdev=user.0"],
+        ["-netdev", "user,id=user.1"],
+        ["-device", "virtio-net,netdev=user.1"]
+      ]
+    }
+  ],
+  "variables": {
+  }
+}

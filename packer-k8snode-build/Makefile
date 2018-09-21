@@ -5,7 +5,7 @@ all: clean build install
 build:
 	cd ${CURDIR}; \
 	packer build -var-file=variables-vbox.json k8snode-vbox.json; \
-	packer build -var-file=variables-qemu.json k8snode-qemu.json;
+	packer build -parallel=true -var-file=variables-qemu.json k8snode-qemu.json;
 
 install:
 	VAGRANT_VBOX_PATH="${CURDIR}/output-vagrant-vbox/virtualbox-k8snode.box"; \

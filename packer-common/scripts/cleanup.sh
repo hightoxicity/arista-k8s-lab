@@ -6,7 +6,6 @@ dpkg --list \
   | grep 'linux-headers' \
   | xargs apt-get -y purge;
 
-
 # Remove specific Linux kernels, such as linux-image-3.11.0-15-generic but
 # keeps the current kernel and does not touch the virtual packages,
 # e.g. 'linux-image-generic', etc.
@@ -35,7 +34,8 @@ dpkg --list \
     | xargs apt-get -y purge;
 
 # Delete X11 libraries
-apt-get -y purge libx11-data xauth libxmuu1 libxcb1 libx11-6 libxext6;
+#apt-get -y purge libx11-data xauth libxmuu1 libxcb1 libx11-6 libxext6;
+apt-get -y purge xauth libxmuu1 libxext6;
 
 # Delete obsolete networking
 apt-get -y purge ppp pppconfig pppoeconf;
@@ -57,6 +57,7 @@ rm -rf /lib/firmware/*
 rm -rf /usr/share/doc/linux-firmware/*
 
 apt-get -y autoremove;
+
 apt-get -y clean;
 
 # Remove docs
@@ -73,3 +74,4 @@ truncate -s 0 /etc/machine-id
 
 # Delete unneeded files.
 rm -f /home/vagrant/*.sh
+rm -f /home/vagrant/VBoxGuestAdditions.iso || true

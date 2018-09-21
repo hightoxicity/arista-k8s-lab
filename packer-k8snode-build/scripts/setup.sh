@@ -7,14 +7,7 @@ hostnamectl set-hostname "k8snode"
 apt-get install software-properties-common -y
 apt-get update
 
-case "$PACKER_BUILDER_TYPE" in
-  qemu)
-    vagrantif="ens3"
-    ;;
-  virtualbox-iso)
-    vagrantif="enp0s3"
-    ;;
-esac
+vagrantif="eth0"
 
 cat <<EOF > /etc/netplan/01-netcfg.yaml
 network:
@@ -115,6 +108,11 @@ NODEIPEOF
 
     sudo /usr/sbin/netplan apply
 
+    sudo parted /dev/sda resizepart 1 100%
+    sudo pvresize /dev/sda1
+    sudo lvextend -l +100%FREE /dev/mapper/trunk--vg-root
+    sudo resize2fs /dev/mapper/trunk--vg-root
+
     [ $? -eq 0 ] && touch ~/firstboot || exit 1
   fi
 ) 200>/var/lock/firstboot.lock
@@ -150,3 +148,8 @@ EOF
 
 systemctl daemon-reload
 systemctl enable firstboot
+
+if [ "${PACKER_BUILDER_TYPE}" == "qemu" ]; then
+  sed -i '/^#GRUB_DISABLE_LINUX_UUID=true/s/^#//' /etc/default/grub
+  grub-install --boot-directory=/boot/ --modules="biosdisk part_msdos" /dev/vda
+fi

@@ -71,7 +71,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "libvirt"
   config.vm.provider "virtualbox"
 
-  config.vm.boot_timeout = 600
+  config.vm.boot_timeout = 1200
 
   config.vbguest.auto_update = false
 
@@ -91,10 +91,11 @@ Vagrant.configure("2") do |config|
 
         override.vm.box = host["box"]["libvirtbox"]
         override.vm.box_version = host["box"]["libvirtbox_version"]
+
         if /provisioner/.match(host['name'])
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
           override.vm.synced_folder '.', '/provisioning', type: 'rsync',
-            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
+            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", "packer-trunk-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
         else
           if /(?i:veos)/.match(host['box']['vbox'])
             override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
@@ -105,7 +106,7 @@ Vagrant.configure("2") do |config|
 bash sudo su || bash -c 'sudo su'
 SCRIPT
           elsif /(?i:k8s-.*)/.match(host['name'])
-            #libvirt.storage :file, :size => '10G', :type => 'qcow2'
+            #libvirt.storage :file, :size => '20G', :type => 'qcow2'
             boot_network = {'network' => 'mgmt'}
             libvirt.boot boot_network
             libvirt.boot 'hd'
@@ -125,7 +126,7 @@ SCRIPT
         if /provisioner/.match(host['name'])
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
           override.vm.synced_folder '.', '/provisioning', type: 'rsync',
-            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
+            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", "packer-trunk-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
         else
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
         end
@@ -134,10 +135,32 @@ SCRIPT
           v.customize [
             'modifyvm', :id,
             '--nicbootprio2', '1',
-            '--boot1', 'net',
-            '--boot2', 'none',
+            '--boot1', 'disk',
+            '--boot2', 'net',
             '--boot3', 'none',
             '--boot4', 'none'
+          ]
+
+          if File.exist?('machines/' + host['name'] + '.vmdk')
+            File.delete('machines/' + host['name'] + '.vmdk')
+          end
+
+          if File.exist?('machines/' + host['name'] + '-flat.vmdk')
+            File.delete('machines/' + host['name'] + '-flat.vmdk')
+          end
+
+          v.customize [
+            'createhd',
+            '--filename', 'machines/' + host['name'],
+            '--format', 'VMDK',
+            '--size', 20480,
+            '--variant', 'Fixed'
+          ]
+          v.customize [
+            'storageattach', :id,
+            '--storagectl', "LsiLogic",
+            '--port', 0, '--device', 0,
+            '--type', 'hdd', '--medium', 'machines/' + host['name'] + '.vmdk'
           ]
         end
 
@@ -216,10 +239,6 @@ SCRIPT
         script += <<-SCRIPT
 hostnamectl set-hostname $1
 SCRIPT
-      end
-
-      if /provisioner/.match(host['name'])
-        srv.vm.provision "shell", path: "./provisioner-config/setup.sh"
       end
 
       srv.vm.provision "shell" do |s|

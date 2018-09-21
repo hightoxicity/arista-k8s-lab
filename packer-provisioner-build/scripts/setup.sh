@@ -26,18 +26,8 @@ mask2cdr ()
 provisioner=$(cat /provisioning/group_vars/all.yml | yq -r '.provisioner')
 mgmt_mask=$(cat /provisioning/group_vars/all.yml | yq -r '.mgmt_mask')
 cdrmask=$(mask2cdr ${mgmt_mask})
-
-
-case "$PACKER_BUILDER_TYPE" in
-  qemu)
-    vagrantif="ens3"
-    mgtif="ens4"
-    ;;
-  virtualbox-iso)
-    vagrantif="enp0s3"
-    mgtif="enp0s8"
-    ;;
-esac
+vagrantif="eth0"
+mgtif="eth1"
 
 cat <<EOF > /etc/netplan/01-netcfg.yaml
 network:
@@ -113,8 +103,14 @@ NPMGEOF
     sudo mv ${netcfg} /etc/netplan/01-netcfg.yaml
     sudo /usr/sbin/netplan apply
 
+    sudo parted /dev/sda resizepart 1 100%
+    sudo pvresize /dev/sda1
+    sudo lvextend -l +100%FREE /dev/mapper/trunk--vg-root
+    sudo resize2fs /dev/mapper/trunk--vg-root
+
     cd /provisioning
     ansible-playbook ./provisioner.yml
+
     [ $? -eq 0 ] && touch ~/firstboot || exit 1
   fi
 ) 200>/var/lock/firstboot.lock
@@ -123,10 +119,6 @@ EOF
 chmod 755 /usr/local/bin/firstboot.sh
 
 SVC_ENV=""
-
-if [ "${PACKER_BUILD_NAME}" != "qemu-raw" ]; then
-  SVC_ENV="VAGRANT=1"
-fi
 
 cat <<EOF >/etc/systemd/system/firstboot.service;
 [Unit]
@@ -153,6 +145,13 @@ EOF
 
 systemctl daemon-reload
 systemctl enable firstboot
+
+# TODO: implement in ansible (provisioner playbook)
+/provisioning/provisioner-config/setup.sh
+
+mv /home/vagrant/k8snode-raw /var/www/html/k8snode-raw
+cd /var/www/html/
+bzip2 k8snode-raw
 
 #su -p - vagrant -c "/usr/local/bin/firstboot.sh"
 #rm -rf /home/vagrant/firstboot
