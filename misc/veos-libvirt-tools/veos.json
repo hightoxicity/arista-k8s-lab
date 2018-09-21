@@ -7,7 +7,7 @@
       "providers": [
         {
           "name": "libvirt",
-          "url": "file:///space/products/k8s-netlab/vEOS-lab-4.20.7M-combined.box"
+          "url": "file:///space/products/k8s-netlab/machines/vEOS-lab-4.20.7M-combined.box"
         }
       ]
     }

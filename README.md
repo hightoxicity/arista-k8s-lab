@@ -30,7 +30,7 @@ Please register on Arista website and download the following Arista veos virtual
 
 For libvirt, you should build your own box from the combined vmdk distributed by Arista. We did not succeed trying to run 4.19.7M image with libvirt (kernel panic), so we chose to use 4.20.7M
 
-Copy working image at project root.
+Copy working images under the machines directory.
 
 ### With virtualbox
 
