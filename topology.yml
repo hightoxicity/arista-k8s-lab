@@ -3,9 +3,9 @@
   ram: 2048
   box:
     vbox: machines/vEOS-lab-4.19.7M-virtualbox.box
-    libvirtbox: arista/veos
+    libvirtbox: libvirt-veos
 #    libvirtbox: machines/vEOS-lab-4.20.7M-combined.box
-    libvirtbox_version: 4.20.7M-qwt11
+    libvirtbox_version: 0
   links:
     - name: mgmt
       ip:   10.0.5.10
@@ -15,9 +15,9 @@
   ram: 2048
   box:
     vbox: machines/vEOS-lab-4.19.7M-virtualbox.box
-    libvirtbox: arista/veos
+    libvirtbox: libvirt-veos
 #    libvirtbox: machines/vEOS-lab-4.20.7M-combined.box
-    libvirtbox_version: 4.20.7M-qwt11
+    libvirtbox_version: 0
   links:
     - name: mgmt
       ip:   10.0.5.11
@@ -27,9 +27,9 @@
   ram: 2048
   box:
     vbox: machines/vEOS-lab-4.19.7M-virtualbox.box
-    libvirtbox: arista/veos
+    libvirtbox: libvirt-veos
 #    libvirtbox: machines/vEOS-lab-4.20.7M-combined.box
-    libvirtbox_version: 4.20.7M-qwt11
+    libvirtbox_version: 0
   links:
     - name: mgmt
       ip:   10.0.5.12
