@@ -1,0 +1,33 @@
+configure
+spanning-tree mode mstp
+aaa authorization exec default local
+aaa root secret sha512 $6$JNzNSAGLfXHBoqXX$4cB0sq5OHyY0MD.3LDEVLMfSGfh.n9gC3HqGspCeRk3RZC6V/vVZ3vCQkb1nC5jg0IA6eiqqiRyjbIeKeIkwr.
+username admin privilege 15 role network-admin secret sha512 $6$LUbuihVfgUToHE47$cC1ibr5TnervzyNXRruxq1rPeUuUmW3Mgm16r0FI9hPBE8CuYTcjI.dSnhTaSJOUQ4CG7z5ZAzVo4r0UkFBD10
+username vagrant privilege 15 role network-admin shell /bin/bash secret sha512 $6$Dos9rNQOveO.pWqZ$wd3JZG9PcM1nHUNfbO.PfS6OmYJpMzg8TjL8BSrhPtfDGAFF/sBM4YHMIx4xZWK1Z6x3mSL2ESwYYz5O5oq511
+username vagrant sshkey ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
+interface Ethernet1
+no switchport
+interface Ethernet2
+no switchport
+interface Ethernet3
+no switchport
+interface Management1
+ip address dhcp
+ipv6 enable
+ipv6 address auto-config
+ipv6 nd ra rx accept default-route
+event-handler ALTER-VAGRANT-SHELL
+trigger on-intf Management1 ip
+action bash sudo sed -i 's:^username vagrant privilege 15 role network-admin shell /bin/bash :username vagrant privilege 15 role network-admin :g' /mnt/flash/startup-config
+delay 120
+event-handler COPY-STARTUP-TO-RUNNING
+trigger on-intf Management1 ip
+action bash FastCli -p 15 -c 'configure replace startup-config'
+delay 130
+event-handler dhclient
+trigger on-boot
+action bash sudo /mnt/flash/initialize_ma1.sh
+no ip routing
+management api http-commands
+no shutdown
+wr mem

@@ -1,0 +1,76 @@
+{
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./files/tmp/veos_conf",
+      "destination": "/tmp/veos_conf"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "cat /tmp/veos_conf | FastCli -p 15"
+      ],
+      "inline_shebang": "/bin/bash",
+      "execute_command": "bash chmod +x {{ .Path }};{{ .Vars }} {{ .Path }}",
+      "skip_clean": "true"
+    }
+  ],
+  "builders": [
+    {
+      "name": "qemu-qcow2",
+      "type": "qemu",
+      "output_directory": "output-qemu-qcow2",
+      "format": "qcow2",
+      "headless": true,
+      "accelerator": "kvm",
+      "http_directory": "http",
+      "http_port_min": 10082,
+      "http_port_max": 10089,
+      "iso_url": "../machines/vEOS-lab-4.20.7M-combined.qcow2",
+      "iso_checksum_type": "none",
+      "disk_image": "true",
+      "disk_interface": "ide",
+      "disk_cache": "directsync",
+      "disk_compression": "true",
+      "disk_size": 10240,
+      "boot_wait": "30s",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "",
+      "shutdown_timeout": "30s",
+      "vm_name": "veos-qcow2",
+      "net_device": "virtio-net",
+      "ssh_host_port_min": 3213,
+      "ssh_host_port_max": 3214,
+      "qemuargs": [
+        ["-m", "2048"],
+        ["-smp", "1"],
+        ["-netdev", "user,id=user.0,hostfwd=tcp::3213-:22,hostfwd=tcp::3214-:22,net=10.0.2.0/24"],
+        ["-device", "virtio-net,netdev=user.0"],
+        ["-netdev", "user,id=user.1"],
+        ["-device", "virtio-net,netdev=user.1"],
+        ["-netdev", "user,id=user.2"],
+        ["-device", "virtio-net,netdev=user.2"],
+        ["-netdev", "user,id=user.3"],
+        ["-device", "virtio-net,netdev=user.3"],
+        ["-netdev", "user,id=user.4"],
+        ["-device", "virtio-net,netdev=user.4"],
+        ["-serial", "telnet::3355,server,nowait"],
+        ["-enable-kvm"],
+        ["-vga", "std"],
+        ["-usb"]
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "output": "output-vagrant-qemu/{{.Provider}}-veos.box",
+      "type": "vagrant",
+      "keep_input_artifact": true
+    }
+  ],
+  "variables": {
+  }
+}
