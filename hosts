@@ -12,6 +12,10 @@ all:
             leaf-1:
               ansible_host: 10.0.5.11
               asn: 64521
+              custom_ip_routes:
+                - 0.0.0.0/0 172.16.64.1
+              additional_networks:
+                - 0.0.0.0/0
             leaf-2:
               ansible_host: 10.0.5.12
               asn: 64522
@@ -27,7 +31,7 @@ all:
           mac: 16189C18A68C
           ansible_host: 10.0.5.254
           records_config:
-            # - "LOCAL proxy.local.outgoing_ip_to_bind STRING {{ .publicip }}"
+            - "LOCAL proxy.local.outgoing_ip_to_bind STRING {{ provisioner }}"
             - "LOCAL proxy.local.incoming_ip_to_bind STRING {{ provisioner }}"
             # - "CONFIG proxy.config.log.logfile_dir STRING {{.logfile_dir}}"
             - "CONFIG proxy.config.http.connect_ports STRING 80 443 2195 8083 5222"

@@ -1,4 +1,7 @@
 #jinja2: lstrip_blocks: False
+{% for iproute in hostparams.customiproutes or [] %}
+ip route {{ iproute }}
+{% endfor %}
 interface Loopback{{ loopbackint }}
    ip address {{ hostparams.loopbackaddr }}
 {% for interface in hostparams.interfaces %}
@@ -18,4 +21,7 @@ router bgp {{ hostparams.asn }}
 {% else %}
    network {{ interface.ip|ipaddr('network/prefix') }}
 {% endif %}
+{% endfor %}
+{% for addntw in hostparams.additionalnetworks or [] %}
+   network {{ addntw }}
 {% endfor %}

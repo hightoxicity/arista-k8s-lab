@@ -3,6 +3,18 @@
 {# Set the loopback address based on ID. Spine ASN is baseasn #}
 {% set loopbackaddr = loopbackprefix|ipsubnet(32, -(routerid)-1) %}
 {% set asn = baseasn %}
+customiproutes:
+{% if 'custom_ip_routes' in hostvars[inventory_hostname] %}
+{% for cipr in hostvars[inventory_hostname]["custom_ip_routes"] or [] %}
+  - "{{ cipr }}"
+{% endfor %}
+{% endif %}
+additionalnetworks:
+{% if 'additional_networks' in hostvars[inventory_hostname] %}
+{% for addntw in hostvars[inventory_hostname]["additional_networks"] or [] %}
+  - "{{ addntw }}"
+{% endfor %}
+{% endif %}
 loopbackaddr: {{ loopbackaddr }}
 asn: {{ asn }}
 {# Generate Interface IPs, peer ASN and peer IPs programatically #}

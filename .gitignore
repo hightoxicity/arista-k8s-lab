@@ -16,3 +16,4 @@ packer-*-build/output-vagrant-vbox
 packer-*-build/output-vagrant-qemu
 vbox-empty-build/output-vbox-empty
 rsync.sh
+*.log

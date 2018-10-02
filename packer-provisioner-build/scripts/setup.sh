@@ -91,6 +91,8 @@ NPSTEOF
       match:
         macaddress: "${mac}"
       addresses: [ "${provisioner}/${cdrmask}" ]
+      nameservers:
+        addresses: [1.1.1.1,1.0.0.1]
 NPMGEOF
 
     netcfg=$(mktemp)

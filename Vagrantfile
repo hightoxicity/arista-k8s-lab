@@ -5,7 +5,7 @@
 Vagrant.require_version ">= 2.1.4"
 
 # Plugins we require
-required_plugins = %w(vagrant-vbguest vagrant-host-shell)
+required_plugins = %w(vagrant-vbguest vagrant-host-shell vagrant-reload)
 
 ##### START Helper functions
 def install_ssh_key()
@@ -74,6 +74,124 @@ Vagrant.configure("2") do |config|
   config.vm.boot_timeout = 1200
 
   config.vbguest.auto_update = false
+
+  config.vm.define "output-router-01" do |rt|
+    config.ssh.insert_key = true
+    rt.vm.base_mac = "16189D18A689"
+    rt.vm.box = "ubuntu/bionic64"
+    rt.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
+
+    rt.vm.network "private_network", auto_config: false, type: "static", virtualbox__intnet: "O1L1", mac: "16189D18A68C", ip: "169.254.1.11", libvirt__network_name: "O1L1", libvirt__forward_mode: "veryisolated", libvirt__dhcp_enabled: false, libvirt__mtu: 1500, model_type: "e1000"
+
+    script = <<-'SCRIPT'
+echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/01-router.conf
+sysctl -p
+sed -ie 's/GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0 \1"/g' /etc/default/grub
+update-grub
+ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
+
+cat <<'EOF' > /etc/systemd/network/01-eth0.link
+[Match]
+MACAddress=16:18:9d:18:a6:89
+
+[Link]
+Name=eth0
+MacAddressPolicy=persistent
+NamePolicy=mac
+EOF
+
+cat <<'EOF' > /etc/systemd/network/01-eth1.link
+[Match]
+MACAddress=16:18:9d:18:a6:8c
+
+[Link]
+Name=eth1
+MacAddressPolicy=persistent
+NamePolicy=mac
+EOF
+
+cat <<EOF > /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    net1:
+      dhcp4: true
+      match:
+        macaddress: "16:18:9d:18:a6:89"
+      set-name: "eth0"
+    net2:
+      addresses: [ "172.16.0.1/16" ]
+      match:
+        macaddress: "16:18:9d:18:a6:8c"
+      set-name: "eth1"
+  vlans:
+    vlan45:
+      id: 45
+      link: net2
+      addresses: [ "172.16.64.1/24" ]
+EOF
+
+rm -rf /etc/netplan/50-cloud-init.yaml
+
+/usr/sbin/netplan apply
+
+SCRIPT
+
+    scriptPostReboot = <<-'SCRIPT'
+iptables -t nat -A POSTROUTING -s 172.16.64.0/24 -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 10.0.5.0/24 -o eth0 -j MASQUERADE
+iptables-save -c > /etc/iptables.rules
+
+apt-get install -y networkd-dispatcher
+
+cat << 'EOF' > /etc/network/if-up.d/iptables
+#! /bin/sh
+set -e
+
+/sbin/iptables-restore < /etc/iptables.rules
+EOF
+
+chmod +x /etc/network/if-up.d/iptables
+
+cat << 'EOF' >  /usr/lib/networkd-dispatcher/routable.d/50-ifup-hooks
+#!/bin/sh
+
+for d in up post-up; do
+    hookdir=/etc/network/if-${d}.d
+    [ -e $hookdir ] && /bin/run-parts $hookdir
+done
+exit 0
+EOF
+
+cat << 'EOF' >  /usr/lib/networkd-dispatcher/routable.d/50-ifdown-hooks
+#!/bin/sh
+
+for d in down post-down; do
+    hookdir=/etc/network/if-${d}.d
+    [ -e $hookdir ] && /bin/run-parts $hookdir
+done
+exit 0
+EOF
+
+chmod +x /usr/lib/networkd-dispatcher/routable.d/50-ifup-hooks
+chmod +x /usr/lib/networkd-dispatcher/routable.d/50-ifdown-hooks
+
+SCRIPT
+
+    rt.vm.provision "shell" do |s|
+      s.privileged = true
+      s.inline = script
+    end
+
+    rt.vm.provision :reload
+
+    rt.vm.provision "shell" do |s|
+      s.privileged = true
+      s.inline = scriptPostReboot
+    end
+
+  end
 
   # Iterate through entries in YAML file
   hosts.each do |host|
@@ -202,7 +320,8 @@ SCRIPT
                 ip: (link.key?("ip") ? link["ip"] : "169.254.1.11"),
                 auto_config: false,
                 type: ((/(?i:k8s-.*)/.match(host['name']) && link["name"] == "mgmt") ? "dhcp" : "static"),
-                mac: (link.key?("mac") ? link["mac"] : nil)
+                mac: (link.key?("mac") ? link["mac"] : nil),
+                model_type: "e1000"
             end
           end
         end
