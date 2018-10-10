@@ -37,7 +37,7 @@
 - name: Install kubernetes packages (Debian/Ubuntu)
   when: ansible_os_family == "Debian"
   apt:
-    name: "{{ item }}"
+    name: "{{ item }}={{ kube_version if kube_pkg_dependencies_strict else kube_version.split('.',2)|join('.') }}*"
     update_cache: yes
   with_items: "{{ pkgs }}"
   environment: "{{proxy_conf}}"
