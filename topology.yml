@@ -23,6 +23,7 @@
       ip:   10.0.5.11
     - name: S1L1
     - name: RACK1-DATA
+    - name: O1L1
 - name: leaf-2
   ram: 2048
   box:

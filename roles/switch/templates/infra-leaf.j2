@@ -4,6 +4,18 @@
 {% set loopbackaddr = loopbackprefix|ipsubnet(32, routerid) %}
 {% set asn = baseasn + routerid %}
 {% set basenet = (routerid -1) * maxspines %}
+customiproutes:
+{% if 'custom_ip_routes' in hostvars[inventory_hostname] %}
+{% for cipr in hostvars[inventory_hostname]["custom_ip_routes"] or [] %}
+  - "{{ cipr }}"
+{% endfor %}
+{% endif %}
+additionalnetworks:
+{% if 'additional_networks' in hostvars[inventory_hostname] %}
+{% for addntw in hostvars[inventory_hostname]["additional_networks"] or [] %}
+  - "{{ addntw }}"
+{% endfor %}
+{% endif %}
 loopbackaddr: {{ loopbackaddr }}
 asn: {{ asn }}
 {# Generate Interface IPs, peer ASN and peer IPs programatically #}
