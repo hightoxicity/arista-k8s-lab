@@ -23,23 +23,6 @@
     state: present
     filename: 'docker'
 
-- name: Add Docker yum repository
-  when: ansible_os_family == "RedHat"
-  yum_repository:
-    name: Docker
-    description: Docker Repository
-    file: docker
-    baseurl: https://yum.dockerproject.org/repo/main/centos/7/
-    enabled: yes
-    gpgcheck: yes
-    gpgkey: https://yum.dockerproject.org/gpg
-
-- name: Install docker engine (RHEL/CentOS)
-  when: ansible_os_family == "RedHat"
-  yum:
-    name: "docker-engine-{{ docker_version }}.*"
-    state: present
-
 - name: Install docker engine (Debian/Ubuntu)
   when: ansible_os_family == "Debian"
   apt:
