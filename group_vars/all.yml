@@ -1,6 +1,7 @@
 ---
 # Kubernetes
-kube_version: v1.11.0
+kube_version: 1.11.3
+kube_pkg_dependencies_strict: no
 token: b0f7b8.8d1767876297d85c
 
 # 1.8.x feature: --feature-gates SelfHosting=true
@@ -14,7 +15,7 @@ kubeadm_opts: ""
 service_subnet: 10.96.0
 service_cidr: "{{ service_subnet }}.0/12"
 
-pod_network_cidr: "10.101.0.0/16"
+pod_network_cidr: "10.201.0.0/16"
 
 enable_dashboard: yes
 

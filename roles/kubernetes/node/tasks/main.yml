@@ -6,8 +6,7 @@
 - name: Join to Kubernetes cluster
   when: not kubeinit_status.stat.exists
   shell: |
-    kubeadm join --skip-preflight-checks \
-                 --token {{ token }} \
+    kubeadm join --token {{ token }} \
                  {{ apiserver_ip }}:6443 \
                  --discovery-token-unsafe-skip-ca-verification
   register: join_cluster
