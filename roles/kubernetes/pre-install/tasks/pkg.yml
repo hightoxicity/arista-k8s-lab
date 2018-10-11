@@ -18,9 +18,8 @@
     filename: 'kubernetes'
 
 - name: Install kubernetes packages (Debian/Ubuntu)
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and (pkgs|length>0)
   apt:
-    name: "{{ item }}={{ kube_version if kube_pkg_dependencies_strict else kube_version.split('.',2)|join('.') }}*"
+    name: "{{ (((pkgs|join(\" \") + \" \").split(\" \")|join(\"=\" + (kube_version + \" \" if kube_pkg_dependencies_strict else (kube_version.split(\".\")[:2]|join(\".\")) + \"* \"))).split(\" \"))[:-1] }}"
     update_cache: yes
-  with_items: "{{ pkgs }}"
   environment: "{{proxy_conf}}"
