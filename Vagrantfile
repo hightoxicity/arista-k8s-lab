@@ -213,7 +213,7 @@ SCRIPT
         if /provisioner/.match(host['name'])
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
           override.vm.synced_folder '.', '/provisioning', type: 'rsync',
-            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", "packer-trunk-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
+            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", "packer-trunk-build", "packer-veoslibvirt-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
         else
           if /(?i:veos)/.match(host['box']['vbox'])
             override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
@@ -244,7 +244,7 @@ SCRIPT
         if /provisioner/.match(host['name'])
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
           override.vm.synced_folder '.', '/provisioning', type: 'rsync',
-            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", "packer-trunk-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
+            rsync__exclude: [ ".gitignore", ".git/", "misc", "packer-k8snode-build", "packer-provisioner-build", "packer-trunk-build", "packer-veoslibvirt-build", ".vagrant", "*.qcow2", "*.vmdk", "*.box" ]
         else
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
         end
