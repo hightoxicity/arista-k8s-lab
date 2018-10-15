@@ -1,7 +1,7 @@
-# Calico Version master
-# https://docs.projectcalico.org/master/releases#master
+# Calico Version v3.2.3
+# https://docs.projectcalico.org/v3.2/releases#v3.2.3
 # This manifest includes the following component versions:
-#   calico/ctl:master
+#   calico/ctl:v3.2.3
 
 apiVersion: v1
 kind: ServiceAccount
