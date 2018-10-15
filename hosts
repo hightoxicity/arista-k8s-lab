@@ -12,10 +12,10 @@ all:
             leaf-1:
               ansible_host: 10.0.5.11
               asn: 64521
-              custom_ip_routes:
-                - 0.0.0.0/0 172.16.64.1
-              additional_networks:
-                - 0.0.0.0/0
+#              custom_ip_routes:
+#                - 0.0.0.0/0 172.16.64.1
+#              additional_networks:
+#                - 0.0.0.0/0
             leaf-2:
               ansible_host: 10.0.5.12
               asn: 64522
