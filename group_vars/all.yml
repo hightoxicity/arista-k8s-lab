@@ -12,10 +12,10 @@ kubeadm_opts: ""
 # For example:
 # kubeadm_opts: '--apiserver-cert-extra-sans "k8s.domain.com,kubernetes.domain.com"'
 
-service_subnet: 10.96.0
+service_subnet: 10.192.0
 service_cidr: "{{ service_subnet }}.0/12"
 
-pod_network_cidr: "10.201.0.0/16"
+pod_network_cidr: "10.208.0.0/16"
 
 enable_dashboard: yes
 
