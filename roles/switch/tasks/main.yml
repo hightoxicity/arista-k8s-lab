@@ -63,13 +63,13 @@
     src: "infra-config.j2"
     match: line
 
-- name: Leaf to k8s nodes bgp config
+- name: Leaf to k8s nodes bgp config if AS PER RACK model
   eos_config:
     lines:
       - "bgp listen range {{ rackprefixdata|ipsubnet(racklength, (inventory_hostname.split('-')[1]|int) - 1) }} peer-group K8S_{{inventory_hostname}} remote-as {{hostvars[inventory_hostname]['asn']}}"
     match: line
     parents: "router bgp {{hostvars[inventory_hostname]['asn']}}"
-  when: inventory_hostname | regex_search('^leaf')
+  when: inventory_hostname | regex_search('^leaf') and as_per_rack_model
 
 - name: Output VLAN for leaf-1
   eos_vlan:

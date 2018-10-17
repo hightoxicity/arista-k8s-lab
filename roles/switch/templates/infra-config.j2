@@ -1,4 +1,6 @@
 #jinja2: lstrip_blocks: False
+peer-filter allasn
+   10 match as-range 1-4294967295 result accept
 {% for iproute in hostparams.customiproutes or [] %}
 ip route {{ iproute }}
 {% endfor %}
@@ -20,6 +22,9 @@ router bgp {{ hostparams.asn }}
    neighbor {{ interface.peerip }} update-source {{ interface.name }}
 {% else %}
    network {{ interface.ip|ipaddr('network/prefix') }}
+{% if interface.dynamicpeers %}
+   bgp listen range {{ interface.ip|ipaddr('network/prefix') }} peer-group peers-{{ hostparams.asn }} peer-filter allasn
+{% endif %}
 {% endif %}
 {% endfor %}
 {% for addntw in hostparams.additionalnetworks or [] %}

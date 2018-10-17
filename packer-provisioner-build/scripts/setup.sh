@@ -8,11 +8,12 @@ apt-get install software-properties-common -y
 LC_ALL=C.UTF-8  apt-add-repository ppa:ansible/ansible -y
 apt-get update
 apt-get install ansible -y
-apt-get install python-pip -y
-pip install ntc-ansible
+apt-get install python3-pip -y
+apt-get install python-netaddr python3-netaddr -y
+pip3 install ntc-ansible netaddr
 
 apt-get install jq -y
-pip install yq
+pip3 install yq
 
 mask2cdr ()
 {
@@ -85,11 +86,15 @@ NPSTEOF
 
     mac=$(cat /provisioning/hosts | yq -r '.all.children.servers.hosts.provisioner.mac' | sed -e 's/[0-9A-F]\{2\}/&:/g' -e 's/:$//'| tr '[:upper:]' '[:lower:]')
     cdrmask=$(mask2cdr ${mgmt_mask})
+    provisioner_router=$(cat /provisioning/group_vars/all.yml | yq -r '.provisioner_router')
 
     read -r -d '' netplanmgt <<NPMGEOF
     mgmtif:
       match:
         macaddress: "${mac}"
+      routes:
+        - to: 0.0.0.0/0
+          via: ${provisioner_router}
       addresses: [ "${provisioner}/${cdrmask}" ]
       nameservers:
         addresses: [1.1.1.1,1.0.0.1]

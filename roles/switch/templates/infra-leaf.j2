@@ -39,3 +39,4 @@ interfaces:
     type: rack
     description: "RACK_LEAF_{{ routerid }}_DATA"
     ip: {{ rackprefixdata|ipsubnet(racklength, routerid - 1)|ipaddr('-2')}}
+    dynamicpeers: false
