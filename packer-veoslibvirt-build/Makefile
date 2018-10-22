@@ -6,11 +6,6 @@ install: install-qemu
 build: build-qemu
 qemu: clean-qemu build-qemu install-qemu
 
-build-vbox:
-	cd ${CURDIR}; \
-	qemu-img convert -f vmdk -O qcow2 ../machines/vEOS-lab-4.20.7M-combined.vmdk ../machines/vEOS-lab-4.20.7M-combined.vmdk.qcow2; \
-	packer build -parallel=true -var-file=variables-qemu.json veos-qemu.json;
-
 build-qemu:
 	cd ${CURDIR}; \
 	qemu-img convert -f vmdk -O qcow2 ../machines/vEOS-lab-4.20.7M-combined.vmdk ../machines/vEOS-lab-4.20.7M-combined.vmdk.qcow2; \
