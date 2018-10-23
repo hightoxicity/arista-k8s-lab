@@ -32,6 +32,14 @@ For libvirt, you should build your own box from the combined vmdk distributed by
 
 Copy working images under the machines directory.
 
+Setup the lab environment using the Makefiles provided
+
+* make vbox
+
+or
+
+* make qemu
+
 ### With virtualbox
 
 * vagrant up --provider virtualbox
