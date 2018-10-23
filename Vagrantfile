@@ -218,7 +218,7 @@ SCRIPT
           if /(?i:veos)/.match(host['box']['vbox'])
             override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
             libvirt.disk_bus = 'ide'
-            libvirt.cpus = 1
+            libvirt.cpus = 2
 
             script += <<-SCRIPT
 bash sudo su || bash -c 'sudo su'
@@ -240,6 +240,13 @@ SCRIPT
 
       srv.vm.provider :virtualbox do |v, override|
         override.vm.box = host["box"]["vbox"]
+
+        if /(?i:veos)/.match(host['box']['vbox'])
+          v.customize [
+            'modifyvm', :id,
+            '--cpus', '2'
+          ]
+        end
 
         if /provisioner/.match(host['name'])
           override.vm.synced_folder '.', '/vagrant', id: "vagrant-root", disabled: true
