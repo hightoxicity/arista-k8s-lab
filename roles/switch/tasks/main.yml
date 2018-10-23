@@ -71,25 +71,25 @@
     parents: "router bgp {{hostvars[inventory_hostname]['asn']}}"
   when: inventory_hostname | regex_search('^leaf')
 
-#- name: Output VLAN for leaf-1
-#  eos_vlan:
-#    vlan_id: 45
-#    name: internet
-#    state: active
-#    interfaces:
-#      - Ethernet4
-#  when: inventory_hostname | regex_search('^leaf-1$')
-#
-#- name: Et4 switchport trunk vlan 45
-#  eos_config:
-#    lines:
-#      - "switchport mode trunk"
-#      - "switchport trunk allowed vlan 45"
-#    parents: "interface ethernet 4"
-#  when: inventory_hostname | regex_search('^leaf-1$')
-#
-#- name: Output VLAN ip address assignment
-#  eos_config:
-#    lines: "ip address 172.16.64.254/24"
-#    parents: "interface vlan 45"
-#  when: inventory_hostname | regex_search('^leaf-1$')
+- name: Output VLAN for leaf-1
+  eos_vlan:
+    vlan_id: 45
+    name: internet
+    state: active
+    interfaces:
+      - Ethernet4
+  when: inventory_hostname | regex_search('^leaf-1$')
+
+- name: Et4 switchport trunk vlan 45
+  eos_config:
+    lines:
+      - "switchport trunk allowed vlan 45"
+      - "switchport mode trunk"
+    parents: "interface Ethernet4"
+  when: inventory_hostname | regex_search('^leaf-1$')
+
+- name: Output VLAN ip address assignment
+  eos_config:
+    lines: "ip address 172.16.64.254/24"
+    parents: "interface Vlan45"
+  when: inventory_hostname | regex_search('^leaf-1$')

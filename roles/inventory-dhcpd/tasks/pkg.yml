@@ -22,3 +22,18 @@
   environment: "{{proxy_conf}}"
   tags:
     - packages
+
+- name: Install python-netaddr
+  when: ansible_os_family == "Debian"
+  apt:
+    name: "{{ ['python-netaddr', 'python3-netaddr'] }}"
+    state: present
+  environment: "{{proxy_conf}}"
+  tags:
+    - packages
+
+- name: Install netaddr pip module
+  pip:
+    name: netaddr
+  tags:
+    - packages
