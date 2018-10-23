@@ -121,7 +121,6 @@ network:
         macaddress: "16:18:9d:18:a6:89"
       set-name: "eth0"
     net2:
-      addresses: [ "172.16.0.1/16" ]
       match:
         macaddress: "16:18:9d:18:a6:8c"
       set-name: "eth1"
@@ -130,6 +129,9 @@ network:
       id: 45
       link: net2
       addresses: [ "172.16.64.1/24" ]
+      routes:
+        - to: 10.0.5.0/24
+          via: 172.16.64.254
 EOF
 
 rm -rf /etc/netplan/50-cloud-init.yaml
@@ -351,11 +353,8 @@ SCRIPT
         script += <<-SCRIPT
 FastCli -p 15 -c "configure
 hostname $1
-vrf definition MGMT
-rd 1:1
 interface Ethernet1
 no switchport
-vrf forwarding MGMT
 ip address $2 255.255.255.0
 wr mem"
 SCRIPT

@@ -12,10 +12,10 @@ all:
             leaf-1:
               ansible_host: 10.0.5.11
               asn: 64521
-#              custom_ip_routes:
-#                - 0.0.0.0/0 172.16.64.1
-#              additional_networks:
-#                - 0.0.0.0/0
+              custom_ip_routes:
+                - 0.0.0.0/0 172.16.64.1
+              additional_networks:
+                - 0.0.0.0/0
             leaf-2:
               ansible_host: 10.0.5.12
               asn: 64522
@@ -130,6 +130,8 @@ all:
                   mac: 16189C195059
                   ansible_host: 10.0.5.100
                   toras: 64521
+                  #as: 65521
+                  as: 64521
                   torpeerip: 10.100.0.254
                   nodeip: 10.100.0.1
             worker:
@@ -138,12 +140,16 @@ all:
                   mac: 16189C127A5F
                   ansible_host: 10.0.5.101
                   toras: 64521
+                  #as: 65522
+                  as: 64521
                   torpeerip: 10.100.0.254
                   nodeip: 10.100.0.2
                 k8s-worker-002:
                   mac: 16189C1BB228
                   ansible_host: 10.0.5.102
                   toras: 64522
+                  #as: 65523
+                  as: 64522
                   torpeerip: 10.100.1.254
                   nodeip: 10.100.1.1
       vars:

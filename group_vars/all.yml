@@ -1,4 +1,9 @@
 ---
+
+ansible_python_interpreter: "/usr/bin/env python3"
+
+as_per_rack_model: true
+
 # Kubernetes
 kube_version: 1.11.3
 kube_pkg_dependencies_strict: no
@@ -33,6 +38,7 @@ mgmt_mask: "255.255.255.0"
 node_mask: "255.255.255.0"
 
 provisioner: "10.0.5.254"
+provisioner_router: "10.0.5.11"
 dhcp_start_index: "150"
 dhcp_end_index: "200"
 
