@@ -1,11 +1,11 @@
 # arista-k8s-lab: Network Automation Lab around K8S + Arista
 
-## Note:
+## Note
 
-Due to some limitations with the veos image, we could not have enough bytes throughput to be able to provision our machines.
-We decided to replace veos by an open source solution and we chose vyos. Other big constraint was the complexity to retrieve veos image requiring to register near arista. You can find our new solution here: https://github.com/hightoxicity/k8s-prodgrade-lab
+*Due to some limitations with the veos image, we could not have enough bytes throughput to be able to provision our machines.
+We decided to replace veos by an open source solution and we chose vyos. Other big constraint was the complexity to retrieve veos image requiring to register near arista. You can find our new solution here: https://github.com/hightoxicity/k8s-prodgrade-lab*
 
-This project will be no more maintained nor will it be evolving.
+*This project will be no more maintained nor will it be evolving.*
 
 ## Project Purpose
 
